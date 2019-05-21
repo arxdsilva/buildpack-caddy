@@ -2,17 +2,18 @@
 
 CURDIR=$PWD
 DIR="$( cd "$( dirname "$0" )" && pwd )"
-echo "-----> Installing latest caddy bin"
+# echo "-----> Installing latest caddy bin"
 # if [ -f $2/caddy_linux_amd64.zip ]; then
 #   echo "-----> caddy is already installed"
 #   cd $2; unzip -o caddy_linux_amd64.zip
 #   cp $2/caddy_linux_amd64 $1/caddy
 # else
 #   echo "-----> download and unzip caddy"
-#   cd $2; wget https://github.com/mholt/caddy/releases/download/v0.5.0/caddy_linux_amd64.zip
+#   cd $2; wget https://github.com/mholt/caddy/releases/download/v1.0.0/caddy_v1.0.0_linux_amd64.tar.gz
 #   cd $2; mkdir -p /app/tmp/cache
-#   cd $2; unzip caddy_linux_amd64.zip
-#   cp $2/caddy_linux_amd64 $1/caddy
+#   cd $2; tar -xvzf caddy_v1.0.0_linux_amd64.tar.gz
+# #   cd $2; unzip caddy_v1.0.0_linux_amd64.tar.gz
+#   cp $2/init/linux-sysvinit/caddy $1/caddy
 # fi
 
 cd $DIR; cp ../caddy $1/caddy
