@@ -16,13 +16,46 @@ DIR="$( cd "$( dirname "$0" )" && pwd )"
 #   cp $2/init/linux-sysvinit/caddy $1/caddy
 # fi
 
-cd $DIR; cp ../caddy $1/caddy
-cd $CURDIR
+cd $DIR; cp ../caddy /usr/local/bin/caddy
+cd CURDIR
 
-echo "-----> Setting up Procfile"
-cd $DIR; cp ../Procfile $1/Procfile
-cd $CURDIR
+prebuild_setup() {
+    echo "-----> setup prebuild"
+    mkdir /prebuild
+    cp /app /prebuild
+    export PATH="./node_modules/.bin:$PATH"
+}
 
-echo "-----> Deploy Caddy Runner"
-cd $DIR; cp ../setup_caddy.sh $1/setup_caddy.sh
-cd $CURDIR 
+build_frontend() {
+    echo "-----> setup frontend"
+    echo "$(git rev-parse HEAD)" > VERSION && \
+        echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc && \
+        npm rebuild node-sass --force && \
+        npm i . && \
+        sed -i "s/VERSION/$(cat VERSION)/g" apps/*/src/environments/environment.*.ts && \
+        mkdir -p /home/www && \
+        ./build_frontend.sh
+}
+
+build_receipt() {
+    echo "-----> setup receipt"
+    mkdir -p /home/www/receipt && \
+    ng build --project=receipt --prod --output-path=/home/www/receipt --deploy-url="/receipt/" --base-href="/receipt/"
+}
+
+build_payment() {
+    echo "-----> setup payment"
+    mkdir -p /home/www/payment && \
+    ng build --project=payment --prod --output-path=/home/www/payment --deploy-url="/payment/" --base-href="/payment/"
+}
+
+build() {
+    echo "-----> setup apps"
+    build_frontend
+    build_receipt
+    build_payment
+    cp /prebuild/Caddyfile$LEVPAY_ENVIRONMENT /prebuild/Caddyfile
+    cd /home/www
+}
+
+build
